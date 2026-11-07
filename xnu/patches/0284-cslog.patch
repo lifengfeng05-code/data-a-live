@@ -7,6 +7,7 @@ index 8e0137d..3a54491 100644
  }
  
 +#include <pexpert/pexpert.h>
++#include <sys/errno.h>
 +
 +/*
 + * PANDORA (0284): boot-arg pandora_cslog=NAME logs each code signature a process of that name adds (the images
@@ -34,6 +35,9 @@ index 8e0137d..3a54491 100644
 +		strlcpy(path, "?", sizeof(path));
 +	}
 +	printf("PANDORA CS: %s adds the signature of %s: %d\n", name, path, error);
++	if (error != 0 && error != EAGAIN) {
++		panic("PANDORA CS: signature of %s failed: %d", path, error);
++	}
 +}
 +
  int
