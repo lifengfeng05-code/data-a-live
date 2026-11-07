@@ -30,7 +30,7 @@ index cb67b4d..b1a72fa 100644
 -	printf("SWEET AMFI: platform binary policy %s (%d)\n",
 -	    error ? "NOT registered" : "registered", error);
 +	int error = 0;
-+	if (sweet_amfi_builtin) {
++	if (1) {
 +		error = mac_policy_register(&sweet_amfi_mac_conf, &sweet_amfi_mac_handle, NULL);
 +		printf("SWEET AMFI: platform binary policy %s (%d)\n",
 +		    error ? "NOT registered" : "registered", error);
