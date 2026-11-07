@@ -1,0 +1,23 @@
+diff --git a/bsd/kern/kern_trustcache.c b/bsd/kern/kern_trustcache.c
+--- a/bsd/kern/kern_trustcache.c
++++ b/bsd/kern/kern_trustcache.c
+@@ -86,7 +86,18 @@
+ 	if (amfi == NULL) {
+ 		panic("amfi interface not available");
+ 	} else if (amfi->TrustCache.version < 2) {
+-		panic("amfi interface is stale: %u", amfi->TrustCache.version);
++		/*
++		 * PANDORA: the built-in sweet_amfi reports TrustCache.version 0 by design
++		 * ("no Image4 -> trust caches unavailable"). With the AppleImage4 kext
++		 * prelinked, img4if is non-NULL so we reach this check and used to panic.
++		 * Fall back to "no trust cache" instead: the built-in MAC policy marks
++		 * every binary on the root filesystem as a platform binary anyway.
++		 */
++		trust_cache_rt = NULL;
++		trust_cache_mut_rt = NULL;
++		printf("PANDORA: AMFI TrustCache interface v%u, running without trust caches\n",
++		    amfi->TrustCache.version);
++		return;
+ 	}
+ 
+ 	trustCacheInitializeRuntime(
