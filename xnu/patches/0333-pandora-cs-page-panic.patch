@@ -1,0 +1,14 @@
+diff --git a/bsd/kern/kern_cs.c b/bsd/kern/kern_cs.c
+--- a/bsd/kern/kern_cs.c
++++ b/bsd/kern/kern_cs.c
+@@ -254,6 +254,10 @@
+ 
+ 	p = current_proc();
+ 
++	/* PANDORA: the panic string survives the panic dump; the console print does not. */
++	panic("CS PAGE FAIL: %s(pid %d) vaddr 0x%llx csflags 0x%x",
++	    p->p_comm, proc_getpid(p), vaddr, (unsigned int)proc_getcsflags(p));
++
+ 	if (verbose) {
+ 		printf("CODE SIGNING: cs_invalid_page(0x%llx): p=%d[%s]\n",
+ 		    vaddr, proc_getpid(p), p->p_comm);
