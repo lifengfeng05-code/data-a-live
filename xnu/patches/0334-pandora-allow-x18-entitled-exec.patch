@@ -1,0 +1,24 @@
+diff --git a/osfmk/arm64/machine_task.c b/osfmk/arm64/machine_task.c
+--- a/osfmk/arm64/machine_task.c
++++ b/osfmk/arm64/machine_task.c
+@@ -287,14 +287,12 @@ machine_task_process_signature(
+ #else /* !__ARM_KERNEL_PROTECT__ */
+ 	if (x18_entitled) {
+ 		/*
+-		 * This *will* make you sad, because it means you are
+-		 * trying to use x18 on a device where that's just not
+-		 * possible. As these are private entitlements, we can
+-		 * prevent confusing damage now.
++		 * PANDORA: the prelinked original AMFI reports the real entitlements, so
++		 * launchd (and every iOS daemon) carries com.apple.private.custom-x18-abi
++		 * and this check killed exec with CS_KILLED before anything else could
++		 * start. task->preserve_x18 stays false, so x18 is never handed to the
++		 * process anyway: accept the exec and say so on the console.
+ 		 */
+-
+-		*error_msg = "process has entitlement that indicates custom x18 ABI usage, not available on this device";
+-		kr = KERN_FAILURE;
++		printf("PANDORA: task has the x18 entitlements; allowing exec\n");
+ 	}
+ #endif /* !__ARM_KERNEL_PROTECT__ */
+ 
