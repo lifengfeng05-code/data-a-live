@@ -2,7 +2,7 @@ diff --git a/bsd/kern/ubc_subr.c b/bsd/kern/ubc_subr.c
 index 8e0137d..3a54491 100644
 --- a/bsd/kern/ubc_subr.c
 +++ b/bsd/kern/ubc_subr.c
-@@ -4595,6 +4595,36 @@ reconstitute_code_signature(
+@@ -4595,6 +4595,40 @@ reconstitute_code_signature(
  	return 0;
  }
  
@@ -43,7 +43,7 @@ index 8e0137d..3a54491 100644
  int
  ubc_cs_blob_add(
  	struct vnode    *vp,
-@@ -5019,6 +5049,7 @@ ubc_cs_blob_add(
+@@ -5019,6 +5053,7 @@ ubc_cs_blob_add(
  	error = 0;      /* success ! */
  
  out:
