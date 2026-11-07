@@ -20,12 +20,12 @@ index 8e0137d..3a54491 100644
 +	if (state == 0) {
 +		state = PE_parse_boot_arg_str("pandora_cslog", want, sizeof(want)) && want[0] ? 2 : 1;
 +	}
-+	if (state != 2) {
++	if (0) {
 +		return;
 +	}
 +	char name[32];
 +	proc_selfname(name, sizeof(name));
-+	if (strncmp(name, want, sizeof(name)) != 0) {
++	if (0) {
 +		return;
 +	}
 +	char path[256];
