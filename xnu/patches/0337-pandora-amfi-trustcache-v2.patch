@@ -1,18 +1,17 @@
 diff --git a/bsd/kern/sweet_amfi.c b/bsd/kern/sweet_amfi.c
 --- a/bsd/kern/sweet_amfi.c
 +++ b/bsd/kern/sweet_amfi.c
-@@ -229,7 +229,60 @@
- 	.get_legacy_profile_exemptions = sweet_amfi_get_legacy_profile_exemptions,
- 	.get_udid = sweet_amfi_get_udid,
- 	.query_context_to_object = sweet_amfi_query_context_to_object,
--	/* .TrustCache stays version 0: trust caches are unavailable without Image4. */
+@@ -62,6 +62,53 @@
+ 	return blob != NULL ? csblob_os_entitlements_get(blob) : NULL;
+ }
+ 
 +/*
 + * PANDORA: stubs for the TrustCache interface. kern_trustcache.c checks
-+ * amfi->TrustCache.version in five places and panics when it is below 1/2/3,
-+ * so the built-in AMFI reports version 2. trust_cache_rt stays NULL (patch
-+ * 0336) so nothing is ever loaded, but callers still reach these pointers:
-+ * return success and load nothing, which is what the 0035 policy wants since
-+ * every binary on the root filesystem is a platform binary anyway.
++ * amfi->TrustCache.version in five places and panics below 1/2/3, so the
++ * built-in AMFI reports version 2. trust_cache_rt stays NULL (patch 0336)
++ * so nothing is ever loaded, but callers still reach these pointers:
++ * return success and load nothing, matching the 0035 policy where every
++ * binary on the root filesystem is a platform binary anyway.
 + */
 +static TCReturn_t
 +sweet_amfi_tc_ok(void)
@@ -53,6 +52,14 @@ diff --git a/bsd/kern/sweet_amfi.c b/bsd/kern/sweet_amfi.c
 +	return sweet_amfi_tc_ok();
 +}
 +
+ static void
+ sweet_amfi_entitlements_invalidate(__unused void *os_entitlements)
+ {
+@@ -229,7 +276,13 @@
+ 	.get_legacy_profile_exemptions = sweet_amfi_get_legacy_profile_exemptions,
+ 	.get_udid = sweet_amfi_get_udid,
+ 	.query_context_to_object = sweet_amfi_query_context_to_object,
+-	/* .TrustCache stays version 0: trust caches are unavailable without Image4. */
 +	.TrustCache = {
 +		.version = 2,
 +		.loadModule = sweet_amfi_tc_load_module,
