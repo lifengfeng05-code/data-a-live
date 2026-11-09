@@ -1,20 +1,18 @@
 diff --git a/osfmk/arm64/sleh.c b/osfmk/arm64/sleh.c
 --- a/osfmk/arm64/sleh.c
 +++ b/osfmk/arm64/sleh.c
-@@ -734,7 +734,19 @@
+@@ -734,7 +734,17 @@
  		}
  #endif /* CONFIG_XNUPOST */
  
 -		panic_with_thread_kernel_state("Kernel instruction fetch abort", state);
 +		{
-+			/*
-+			 * PANDORA: pc=0 means a NULL function pointer was called. The lr in
-+			 * the saved state is often stale, so walk the frame pointer chain
-+			 * and print the first three return addresses: fp+8 is the caller.
-+			 */
-+			uint64_t fp = (uint64_t)state->x[29];
++			/* PANDORA: pc=0 means a NULL function pointer was called; walk the
++			 * frame pointer chain and print the first three return addresses. */
++			uint64_t fp = (uint64_t)saved_state64(state)->x[29];
 +			panic("NULL CALL: pc=0x%llx lr=0x%llx fp=0x%llx chain=[%llx %llx %llx]",
-+			    (uint64_t)state->pc, (uint64_t)state->x[30], fp,
++			    (uint64_t)saved_state64(state)->pc,
++			    (uint64_t)saved_state64(state)->x[30], fp,
 +			    fp ? *(uint64_t *)fp : 0,
 +			    fp ? *(uint64_t *)(fp + 8) : 0,
 +			    fp ? *(uint64_t *)(fp + 16) : 0);
