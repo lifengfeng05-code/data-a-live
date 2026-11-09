@@ -1,18 +1,64 @@
 diff --git a/bsd/kern/sweet_amfi.c b/bsd/kern/sweet_amfi.c
 --- a/bsd/kern/sweet_amfi.c
 +++ b/bsd/kern/sweet_amfi.c
-@@ -229,7 +229,14 @@
+@@ -229,7 +229,60 @@
  	.get_legacy_profile_exemptions = sweet_amfi_get_legacy_profile_exemptions,
  	.get_udid = sweet_amfi_get_udid,
  	.query_context_to_object = sweet_amfi_query_context_to_object,
 -	/* .TrustCache stays version 0: trust caches are unavailable without Image4. */
-+	/*
-+	 * PANDORA: report TrustCache version 2 so kern_trustcache.c's interface checks
-+	 * (version < 1/2/3 in five places) pass. The callbacks stay NULL and
-+	 * trust_cache_rt is NULL (patch 0336), so no trust cache path runs.
-+	 */
++/*
++ * PANDORA: stubs for the TrustCache interface. kern_trustcache.c checks
++ * amfi->TrustCache.version in five places and panics when it is below 1/2/3,
++ * so the built-in AMFI reports version 2. trust_cache_rt stays NULL (patch
++ * 0336) so nothing is ever loaded, but callers still reach these pointers:
++ * return success and load nothing, which is what the 0035 policy wants since
++ * every binary on the root filesystem is a platform binary anyway.
++ */
++static TCReturn_t
++sweet_amfi_tc_ok(void)
++{
++	TCReturn_t r = { .rawValue = 0 };
++	return r;
++}
++
++static TCReturn_t
++sweet_amfi_tc_load_module(__unused TrustCacheRuntime_t *runtime, __unused const TCType_t type,
++    __unused TrustCache_t *trustCache, __unused const uintptr_t dataAddr,
++    __unused const size_t dataSize)
++{
++	return sweet_amfi_tc_ok();
++}
++
++static TCReturn_t
++sweet_amfi_tc_load(__unused TrustCacheRuntime_t *runtime, __unused TCType_t type,
++    __unused TrustCache_t *trustCache, __unused const uintptr_t payloadAddr,
++    __unused const size_t payloadSize, __unused const uintptr_t manifestAddr,
++    __unused const size_t manifestSize)
++{
++	return sweet_amfi_tc_ok();
++}
++
++static TCReturn_t
++sweet_amfi_tc_query(__unused const TrustCacheRuntime_t *runtime, __unused TCQueryType_t queryType,
++    __unused const uint8_t CDHash[kTCEntryHashSize],
++    __unused TrustCacheQueryToken_t *queryToken)
++{
++	return sweet_amfi_tc_ok();
++}
++
++static TCReturn_t
++sweet_amfi_tc_get_capabilities(__unused const TrustCache_t *trustCache,
++    __unused TCCapabilities_t *capabilities)
++{
++	return sweet_amfi_tc_ok();
++}
++
 +	.TrustCache = {
 +		.version = 2,
++		.loadModule = sweet_amfi_tc_load_module,
++		.load = sweet_amfi_tc_load,
++		.query = sweet_amfi_tc_query,
++		.getCapabilities = sweet_amfi_tc_get_capabilities,
 +	},
  	.OSEntitlements = {
  		.version = OSENTITLEMENTS_INTERFACE_VERSION,
