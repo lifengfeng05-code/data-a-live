@@ -1,0 +1,16 @@
+diff --git a/bsd/kern/kern_exec.c b/bsd/kern/kern_exec.c
+--- a/bsd/kern/kern_exec.c
++++ b/bsd/kern/kern_exec.c
+@@ -7733,6 +7733,12 @@
+ 	}
+ 
+ done:
++	/* PANDORA: show why process_signature is about to fail. */
++	panic("EXECSIG name=%s err=%d ip_csflags=0x%x SIGNED=%d reason_ptr=%p csflags=0x%x",
++	    p->p_name, error, (unsigned)imgp->ip_csflags,
++	    (imgp->ip_csflags & CS_SIGNED) ? 1 : 0, imgp->ip_cs_error,
++	    (unsigned)proc_getcsflags(p));
++
+ 	if (0 == error) {
+ 		/*
+ 		 * Update the new process's signature-dependent process state.
