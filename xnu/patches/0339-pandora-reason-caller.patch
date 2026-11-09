@@ -1,0 +1,15 @@
+diff --git a/bsd/kern/sys_reason.c b/bsd/kern/sys_reason.c
+--- a/bsd/kern/sys_reason.c
++++ b/bsd/kern/sys_reason.c
+@@ -63,6 +63,11 @@
+ {
+ 	os_reason_t new_reason;
+ 
++	/* PANDORA: pin down who creates an EXEC reason with code 0. */
++	if (osr_namespace == 9 && osr_code == 0) {
++		panic("REASON ns=9 code=0 caller=%p", __builtin_return_address(0));
++	}
++
+ 	new_reason = zalloc_flags(os_reason_zone, Z_WAITOK | Z_ZERO);
+ 	new_reason->osr_namespace = osr_namespace;
+ 	new_reason->osr_code = osr_code;
