@@ -1,0 +1,21 @@
+diff --git a/bsd/kern/mach_loader.c b/bsd/kern/mach_loader.c
+--- a/bsd/kern/mach_loader.c
++++ b/bsd/kern/mach_loader.c
+@@ -3356,7 +3356,16 @@
+ 		goto out;
+ 	}
+ 
+-	imgp->ip_cs_error = reason;
++	/*
++	 * PANDORA: do not turn a signature verdict into an exec failure. On this
++	 * device the original AMFI kext rejects binaries whose CD hash does hit the
++	 * OS trust cache, and ip_cs_error makes process_signature() return EACCES,
++	 * which aborts load_init_program with "Process 1 exec of /sbin/launchd
++	 * failed, errno 13". Keep the console message, drop the failure.
++	 */
++	os_reason_free(reason);
++	goto out;
++
+ 	reason->osr_flags = (OS_REASON_FLAG_GENERATE_CRASH_REPORT |
+ 	    OS_REASON_FLAG_CONSISTENT_FAILURE);
+ 
