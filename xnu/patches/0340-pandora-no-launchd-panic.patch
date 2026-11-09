@@ -1,0 +1,15 @@
+diff --git a/bsd/kern/kern_sig.c b/bsd/kern/kern_sig.c
+--- a/bsd/kern/kern_sig.c
++++ b/bsd/kern/kern_sig.c
+@@ -2059,7 +2059,10 @@
+ #endif /* SIGNAL_DEBUG */
+ 
+ 	/* catch unexpected initproc kills early for easier debuggging */
+-	if (signum == SIGKILL && p == initproc) {
++	/* PANDORA: do not panic when launchd gets SIGKILL. Seeing what the system does
++	 * without the panic is more useful than the panic string: launchd may be
++	 * respawned and the boot may continue. */
++	if (0 && signum == SIGKILL && p == initproc) {
+ 		if (signal_reason == NULL) {
+ 			panic_plain("unexpected SIGKILL of %s %s (no reason provided)",
+ 			    (p->p_name[0] != '\0' ? p->p_name : "initproc"),
