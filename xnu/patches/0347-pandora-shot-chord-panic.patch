@@ -1,0 +1,15 @@
+diff --git a/bsd/dev/fuxi_keys.c b/bsd/dev/fuxi_keys.c
+--- a/bsd/dev/fuxi_keys.c
++++ b/bsd/dev/fuxi_keys.c
+@@ -665,8 +665,9 @@
+ 		 * volume down Android's). The keys still go to iOS. */
+ 		const bool chord = state[0] + state[1] + state[2] >= 2;
+ 		if (chord && !shot_chord) {
+-			printf("PANDORA KEYS: %s%s%s: screen shot\n", state[0] ? "power " : "", state[1] ? "volume-up " : "",
+-			    state[2] ? "volume-down" : "");
++			/* PANDORA: make the chord visible on the panic screen, then take the shot. */
++			panic("PANDORA KEYS: chord power=%d volup=%d voldn=%d -> shot",
++			    state[0], state[1], state[2]);
+ 			pandora_shot_request();
+ 		}
+ 		shot_chord = chord;
