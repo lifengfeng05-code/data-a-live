@@ -1,0 +1,20 @@
+diff --git a/security/mac_vfs.c b/security/mac_vfs.c
+--- a/security/mac_vfs.c
++++ b/security/mac_vfs.c
+@@ -1378,6 +1378,16 @@
+ 			goto out;
+ 		}
+ 
++		/*
++		 * PANDORA: do not turn AMFI's fatal signature verdict into an exec
++		 * failure. On this device the original AMFI kext rejects otherwise
++		 * valid binaries (launchd's CD hash does hit the OS trust cache), and
++		 * ip_cs_error makes process_signature() return EACCES, which aborts
++		 * load_init_program with "Process 1 exec of /sbin/launchd failed,
++		 * errno 13" and leaves the phone without an init.
++		 */
++		goto out;
++
+ 		os_reason_t reason = os_reason_create(OS_REASON_CODESIGNING,
+ 		    CODESIGNING_EXIT_REASON_TASKGATED_INVALID_SIG);
+ 
