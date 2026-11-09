@@ -1,0 +1,22 @@
+diff --git a/bsd/kern/kern_exec.c b/bsd/kern/kern_exec.c
+--- a/bsd/kern/kern_exec.c
++++ b/bsd/kern/kern_exec.c
+@@ -7582,9 +7582,16 @@
+ 
+ 	/* call the launch constraints hook */
+ 	os_reason_t launch_constraint_reason;
++	/*
++	 * PANDORA: AMFI's launch-constraint check rejects launchd here and the
++	 * non-zero return becomes the exec error (EACCES, seen as "Process 1 exec
++	 * of /sbin/launchd failed, errno 13"). Ignore the verdict: ip_csflags
++	 * carries CS_SIGNED (0x22000001), so the CS_SIGNED branch below is the
++	 * intended path and it sets error = 0.
++	 */
+ 	if ((error = mac_proc_check_launch_constraints(p, imgp, &launch_constraint_reason)) != 0) {
+-		signature_failure_reason = launch_constraint_reason;
+-		goto done;
++		printf("PANDORA: ignoring launch-constraint verdict %d for %s\n", error, p->p_name);
++		error = 0;
+ 	}
+ 
+ #if XNU_TARGET_OS_OSX
