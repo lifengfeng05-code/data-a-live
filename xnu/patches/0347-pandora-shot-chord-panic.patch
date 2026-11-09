@@ -1,15 +1,17 @@
 diff --git a/bsd/dev/fuxi_keys.c b/bsd/dev/fuxi_keys.c
 --- a/bsd/dev/fuxi_keys.c
 +++ b/bsd/dev/fuxi_keys.c
-@@ -665,9 +665,10 @@
+@@ -665,9 +665,12 @@
  		 * volume down Android's). The keys still go to iOS. */
  		const bool chord = state[0] + state[1] + state[2] >= 2;
  		if (chord && !shot_chord) {
 -			printf("PANDORA KEYS: %s%s%s: screen shot\n", state[0] ? "power " : "", state[1] ? "volume-up " : "",
 -			    state[2] ? "volume-down" : "");
-+			/* PANDORA: take the shot, then panic so the result is visible on screen. */
++			/* PANDORA: pandora_shot_request spawns a kernel thread; give it two seconds
++			 * to write the file before the panic freezes the machine. */
  			pandora_shot_request();
-+			panic("PANDORA KEYS: chord power=%d volup=%d voldn=%d, shot requested",
++			delay(2000000);
++			panic("PANDORA KEYS: chord power=%d volup=%d voldn=%d, shot should be saved",
 +			    state[0], state[1], state[2]);
  		}
  		shot_chord = chord;
