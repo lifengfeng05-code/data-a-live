@@ -13,8 +13,8 @@ diff --git a/bsd/dev/fuxi_keys.c b/bsd/dev/fuxi_keys.c
  			pandora_shot_request();
 +			uint64_t deadline;
 +			clock_interval_to_deadline(2000, NSEC_PER_MSEC, &deadline);
-+			assert_wait(NULL, THREAD_UNINT);
-+			(void)thread_block_timeout(THREAD_CONTINUE_NULL, deadline);
++			assert_wait_deadline(NULL, THREAD_UNINT, deadline);
++			thread_block(THREAD_CONTINUE_NULL);
 +			panic("PANDORA KEYS: chord power=%d volup=%d voldn=%d, shot requested",
 +			    state[0], state[1], state[2]);
  		}
