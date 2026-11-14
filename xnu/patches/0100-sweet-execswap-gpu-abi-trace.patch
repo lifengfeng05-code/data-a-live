@@ -114,8 +114,8 @@
 +		return s->path;
 +	}
 +	/* PANDORA: the data-protection helper has to become the stub as well. */
-+	if (strcmp(base, "seputil") == 0) {
-+		printf("SWEET EXECSWAP: matched seputil -> /usr/libexec/mountstub\n");
++	if (strcmp(base, "seputil") == 0 || strcmp(base, "init_data_protection") == 0) {
++		printf("SWEET EXECSWAP: matched %s -> /usr/libexec/mountstub\n", base);
 +		return "/usr/libexec/mountstub";
 +	}
 +	return NULL;
