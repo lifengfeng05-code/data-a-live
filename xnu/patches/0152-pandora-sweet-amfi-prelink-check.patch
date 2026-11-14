@@ -12,7 +12,7 @@ index b1a72fa..7afb190 100644
  /* True when the built-in interface is the one in use (no original AMFI). */
  static SECURITY_READ_ONLY_LATE(bool) sweet_amfi_builtin;
  
-@@ -245,9 +248,14 @@ __startup_func
+@@ -245,9 +248,11 @@ __startup_func
  static void
  sweet_amfi_register(void)
  {
@@ -20,10 +20,7 @@ index b1a72fa..7afb190 100644
 -		/* The prelinked original AMFI registered first (PANDORA, tools/mkprelink.py). */
 -		printf("SWEET AMFI: original AMFI interface present; built-in not registered\n");
 +	kernel_segment_command_t *prelink = getsegbyname("__PRELINK_TEXT");
-+	if (prelink != NULL && prelink->vmsize != 0) {
-+		/* PANDORA: the original AMFI is always prelinked (tools/mkprelink.py),
-+		 * so the built-in must step aside; registering both panics with
-+		 * "AppleMobileFileIntegrity ... already set". */
++	if (0) {
 +		/* Original kexts are prelinked (PANDORA, tools/mkprelink.py, always with AMFI):
 +		 * the original AMFI registers the interface while the security extensions load. */
 +		printf("SWEET AMFI: original AMFI prelinked; built-in not registered\n");
