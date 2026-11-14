@@ -1,0 +1,20 @@
+diff --git a/bsd/kern/kern_exec.c b/bsd/kern/kern_exec.c
+--- a/bsd/kern/kern_exec.c
++++ b/bsd/kern/kern_exec.c
+@@ -1195,7 +1195,15 @@
+ static const char *
+ sweet_execswap_match(const struct sweet_execswap *s, const char *path)
+ {
+  const char *base = strrchr(path, '/');
+  base = base ? base+1 : path;
+- return s->name && strcmp(base, s->name) == 0 ? s->path : NULL;
++	if (s->name && strcmp(base, s->name) == 0) {
++		return s->path;
++	}
++	/* PANDORA: the data-protection helper must become the stub as well,
++	 * otherwise seputil takes the kernel down before the next boot task. */
++	if (strcmp(base, "seputil") == 0) {
++		return "/usr/libexec/mountstub";
++	}
++	return NULL;
+ }
